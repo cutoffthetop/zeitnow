@@ -7,39 +7,54 @@ import (
 	"appengine"
 	"appengine/urlfetch"
 	"io/ioutil"
-)
+	)
 
-func wikiWords(w http.ResponseWriter, r *http.Request) {
-	type Page struct {
+func wikiWords(w http.ResponseWriter, r *http.Request) []string {
+	type TrendingTopicsPage struct {
 		Title	string	`xml:"title"`
+		Id		string	`xml:"id"`
 	}
 	
-	type Result struct {
-		XMLName	xml.Name `xml:"pages"`
-		Type	string	 `xml:"type,attr"`
-		Page	[]Page	 `xml:"page"`
+	type TrendingTopics struct {
+		XMLName	xml.Name 			 `xml:"pages"`
+		Type	string				 `xml:"type,attr"`
+		Page	[]TrendingTopicsPage `xml:"page"`
+	}
+
+	type WikiTranslation struct {
+		XMLName	xml.Name	`xml:"api"`
+		German	string		`xml:"query>pages>page>langlinks>ll"`
 	}
 
 	c := appengine.NewContext(r)
 	client := urlfetch.Client(c)
 
-	resp, err := client.Get("http://www.trendingtopics.org/pages.xml")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
+	resp, _ := client.Get("http://www.trendingtopics.org/pages.xml")
+	body, _ := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 
-	v := Result{}
-	err = xml.Unmarshal([]byte(body), &v)
+	result := TrendingTopics{}
+	xml.Unmarshal([]byte(body), &result)
 
-	if err != nil {
-		fmt.Fprintf(w, "No marsh: %v", err)
+	var words []string = make([]string, len(result.Page))
+
+	for i := range result.Page {
+
+		url := "http://en.wikipedia.org/w/api.php?action=query&titles=" +
+			result.Page[i].Title + "&prop=langlinks&format=xml&llcontinue=" +
+			result.Page[i].Id + "|de&lllimit=1"
+
+		translation := WikiTranslation{}
+		resp, _ := client.Get(url)
+		body, _ := ioutil.ReadAll(resp.Body)
+		resp.Body.Close()
+
+		xml.Unmarshal([]byte(body), &translation)
+
+		words[i] = translation.German
 	}
-	fmt.Fprintf(w, "%v", v)
-	return
+
+	return words
 }
 
 func init() {
@@ -47,5 +62,8 @@ func init() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	wikiWords(w, r)
+	ww := wikiWords(w, r)
+	for i := range ww {
+		fmt.Fprintf(w, "%v\n", ww[i])
+	}
 }
