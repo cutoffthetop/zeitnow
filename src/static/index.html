@@ -1,5 +1,5 @@
 <!doctype html>
-	<html lang="de">
+	<html ng-app="zeitnow">
 		<head>
 			<meta charset="utf-8" />
 			<title>Zeit Now</title>
@@ -8,52 +8,57 @@
 			<link href="css/bootstrap.css" rel="stylesheet" media="screen">
 			<link href="css/bootstrap-responsive.css" rel="stylesheet">
 			<link href="css/zeitnow.css" rel="stylesheet" media="screen">
+			<script src="_ah/channel/jsapi"></script>
 			<script src="js/jquery.min.js"></script>
 			<script src="js/angular.min.js"></script>
 			<script src="js/bootstrap.min.js"></script>
 			<script src="js/zeitnow.js"></script>
 		</head>
 		<body>
-			<div class="container">
-				<h1>Zeit Now
-				<small>
-					Stories are happening everywhere. See them spread.
-				</small></h1>
+			<div class="container" ng-controller="ZeitNowCtrl">
+				<h1>
+					Zeit Now <small>Stories are happening everywhere. Watch them spread.</small>
+				</h1>
 				<hr/>
-				<div class="hero-unit">
-					<h2>Heading</h2>
-					<p>Tagline</p>
-				</div>
-
 				<div class="row">
-					<div class="zn-box span4">
+					<div ng-repeat="story in stories" class="span4">
+						<h2>
+							{{story.teaser_title}}
+						</h2>
+						<p class="lead">
+							{{story.teaser_text}}
+							<small>
+								<a href="{{story.href}}" target="_blank">Weiterlesen...</a>
+							</small>
+						</p>
+					</div>
+				</div>
+				<hr/>
+				<div class="row">
+					<div class="span4">
 						<blockquote>
 							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-							<small>Someone famous Source Title</small>
+							<small>Someone from Berlin on Twitter 3 seconds ago.</small>
+						</blockquote>
+						<blockquote>
+							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+							<small>Someone from Frankfurt on Google+ 6 seconds ago.</small>
 						</blockquote>
 					</div>
 					<div class="span4">
 						<blockquote>
 							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-							<small>Someone famous Source Title</small>
+							<small>Someone from Munich on Facebook 4 seconds ago.</small>
 						</blockquote>
 					</div>
 					<div class="span4">
 						<blockquote>
 							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-							<small>Someone famous Source Title</small>
+							<small>Someone else from Berlin on Twitter 5 seconds ago.</small>
 						</blockquote>
-					</div>
-					<div class="span4">
 						<blockquote>
 							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-							<small>Someone famous Source Title</small>
-						</blockquote>
-					</div>
-					<div class="span4">
-						<blockquote>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-							<small>Someone famous Source Title</small>
+							<small>Someone from Hamburg on Zeit Online 7 seconds ago.</small>
 						</blockquote>
 					</div>
 				</div>
