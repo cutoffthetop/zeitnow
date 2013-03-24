@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Zeitnow
-	~~~~~~~
-
+	Project: Zeit Now
 	Author: Nicolas Drebenstedt
 	License: BSD, see LICENSE.md for details.
 """
