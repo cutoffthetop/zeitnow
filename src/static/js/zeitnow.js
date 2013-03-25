@@ -15,6 +15,7 @@ app.controller('ZeitNowCtrl', function($scope) {
 
 	$scope.onMessage = function(msg) {
 		$scope.stories = JSON.parse(msg.data);
+		console.log($scope.stories);
 		$scope.$apply();
 	};
 

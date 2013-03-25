@@ -1,0 +1,7 @@
+.no-link {
+	color: #333333;
+}
+
+.no-link:hover {
+	text-decoration: none;
+}

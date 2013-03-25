@@ -1,16 +1,17 @@
 <!doctype html>
 	<html ng-app="zeitnow">
 		<head>
-			<meta charset="utf-8" />
+			<meta charset="utf-8"/>
 			<title>Zeit Now</title>
-		    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-		    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
-			<link href="css/bootstrap.css" rel="stylesheet" media="screen">
-			<link href="css/bootstrap-responsive.css" rel="stylesheet">
-			<link href="css/zeitnow.css" rel="stylesheet" media="screen">
+		    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"/>
+			<link href="css/bootstrap.css" rel="stylesheet" media="screen"/>
+			<link href="css/bootstrap-responsive.css" rel="stylesheet"/>
+			<link href="css/zeitnow.css" rel="stylesheet" media="screen"/>
 			<script src="_ah/channel/jsapi"></script>
 			<script src="js/jquery.min.js"></script>
 			<script src="js/angular.min.js"></script>
+			<script src="js/moment.min.js"></script>
 			<script src="js/bootstrap.min.js"></script>
 			<script src="js/zeitnow.js"></script>
 		</head>
@@ -18,47 +19,43 @@
 			<div class="container" ng-controller="ZeitNowCtrl">
 				<h1>
 					Zeit Now <small>Stories are happening everywhere. Watch them spread.</small>
+					<script>moment("20111031", "YYYYMMDD").fromNow();</script>
 				</h1>
 				<hr/>
 				<div class="row">
 					<div ng-repeat="story in stories" class="span4">
+						<small class="label label-info">
+							{{story.lead.supertitle}}
+						</small>
 						<h2>
-							{{story.teaser_title}}
+							{{story.lead.teaser_title}}
 						</h2>
 						<p class="lead">
-							{{story.teaser_text}}
-							<small>
-								<a href="{{story.href}}" target="_blank">Weiterlesen...</a>
+							<a href="{{story.lead.href}}" class="no-link" target="_blank">
+								{{story.lead.teaser_text}}
+							</a>
+							<small ng-repeat="creator in story.lead.creators">
+								– {{creator.name}}
 							</small>
 						</p>
 					</div>
 				</div>
 				<hr/>
 				<div class="row">
-					<div class="span4">
-						<blockquote>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-							<small>Someone from Berlin on Twitter 3 seconds ago.</small>
-						</blockquote>
-						<blockquote>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-							<small>Someone from Frankfurt on Google+ 6 seconds ago.</small>
-						</blockquote>
-					</div>
-					<div class="span4">
-						<blockquote>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-							<small>Someone from Munich on Facebook 4 seconds ago.</small>
-						</blockquote>
-					</div>
-					<div class="span4">
-						<blockquote>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-							<small>Someone else from Berlin on Twitter 5 seconds ago.</small>
-						</blockquote>
-						<blockquote>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-							<small>Someone from Hamburg on Zeit Online 7 seconds ago.</small>
+					<div ng-repeat="story in stories" class="span4">
+						<blockquote ng-repeat="tweet in story.tweets">
+							<p>
+								<a href="http://twitter.com/{{tweet.from_user}}" target="_blank">
+									<img src="{{tweet.profile_image_url}}" class="pull-right img-circle" alt="tweet.from_user_name"/>
+								</a>
+								<a href="http://twitter.com/{{tweet.from_user}}/status/{{tweet.id_str}}" class="no-link" target="_blank">
+									{{tweet.text}}
+								</a>
+							</p>
+							<small>
+								<a href="http://twitter.com/{{tweet.from_user}}" target="_blank">{{tweet.from_user_name}}</a>
+								via Twitter
+							</small>
 						</blockquote>
 					</div>
 				</div>

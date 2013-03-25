@@ -8,6 +8,9 @@ handlers:
 - url: /api/.*
   script: main.py
 
+- url: /_ah/.*
+  script: main.py
+
 - url: /
   static_files: static/index.html
   upload: static/index.html

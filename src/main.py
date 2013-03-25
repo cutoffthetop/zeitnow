@@ -11,7 +11,7 @@ from werkzeug.routing import Map, Rule
 from google.appengine.api.channel import create_channel, send_message
 from google.appengine.api.taskqueue import Task
 from google.appengine.api.urlfetch import fetch
-import json
+import json, urllib
 
 class Zeitnow(object):
 
@@ -28,15 +28,26 @@ class Zeitnow(object):
 					string = '/api/channel',
 					endpoint = 'open_channel',
 					methods = ['POST']
+					),
+				Rule(
+					string = '/_ah/channel/connected',
+					endpoint = 'channel_connected',
+					methods = ['POST']
 					)
 				]
 			)
 
 	def fetch_zeit(self, url):
-		from private import API_KEY
+		from private import ZEIT_API_KEY
 		resp = fetch(
 			url = url,
-			headers = {'X-Authorization': API_KEY}
+			headers = {'X-Authorization': ZEIT_API_KEY}
+			)
+		return json.loads(resp.content)
+
+	def fetch_twitter(self, topic):
+		resp = fetch(
+			url = 'http://search.twitter.com/search.json?rpp=3&q=' + topic
 			)
 		return json.loads(resp.content)
 
@@ -45,10 +56,15 @@ class Zeitnow(object):
 		matches = self.fetch_zeit('http://api.zeit.de/content?limit=3')['matches']
 		result = []
 		for i in range(len(matches)):
-			result.append(self.fetch_zeit(matches[i]['uri']))
+			lead = self.fetch_zeit(matches[i]['uri'])
+			tweets = self.fetch_twitter(urllib.quote(matches[i]['href']))['results']
+			result.append(dict(lead = lead, tweets = tweets))
 		
 		send_message('1234', json.dumps(result))
 
+		return Response(status = 204)
+
+	def channel_connected(self, request):
 		return Response(status = 204)
 
 	def open_channel(self, request):
@@ -56,12 +72,8 @@ class Zeitnow(object):
 		client_id = request.values['client_id']
 		token = create_channel(client_id)
 
-		task = Task(
-			url = '/api/update',
-			countdown = 3
-			)
-		task.add()
-
+		Task(url = '/api/update', countdown = 2).add()
+		
 		return Response(json.dumps({'channel': token}))
 
 	def __call__(self, environ, start_response):
