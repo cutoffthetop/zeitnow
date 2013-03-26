@@ -1,5 +1,5 @@
 total_storage_limit: 16K
 queue:
 - name: default
-  rate: 4/m
+  rate: 1/s
   mode: push

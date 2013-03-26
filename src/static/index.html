@@ -12,16 +12,28 @@
 			<script src="js/jquery.min.js"></script>
 			<script src="js/angular.min.js"></script>
 			<script src="js/moment.min.js"></script>
+			<script src="js/lang/de.js"></script>
 			<script src="js/bootstrap.min.js"></script>
 			<script src="js/zeitnow.js"></script>
 		</head>
 		<body>
 			<div class="container" ng-controller="ZeitNowCtrl">
 				<h1>
-					Zeit Now <small>Stories are happening everywhere. Watch them spread.</small>
-					<script>moment("20111031", "YYYYMMDD").fromNow();</script>
+					Zeit Now
+					<a href="#myModal" data-toggle="modal">
+						<i class="icon-info-sign align-middle"></i>
+					</a>
 				</h1>
-				<hr/>
+				<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						<h3 id="myModalLabel">About Zeit Now</h3>
+					</div>
+					<div class="modal-body">
+						<p>One fine body…</p>
+					</div>
+				</div>
+				<hr ng-show="stories"/>
 				<div class="row">
 					<div ng-repeat="story in stories" class="span4">
 						<small class="label label-info">
@@ -31,7 +43,7 @@
 							{{story.lead.teaser_title}}
 						</h2>
 						<p class="lead">
-							<a href="{{story.lead.href}}" class="no-link" target="_blank">
+							<a href="{{story.lead.href}}" class="no-link" target="_blank" alt="Den ganze Artikel lesen.">
 								{{story.lead.teaser_text}}
 							</a>
 							<small ng-repeat="creator in story.lead.creators">
@@ -40,9 +52,12 @@
 						</p>
 					</div>
 				</div>
-				<hr/>
+				<hr ng-show="stories"/>
 				<div class="row">
 					<div ng-repeat="story in stories" class="span4">
+						<small class="muted" ng-hide="story.tweets">
+							Noch keine Tweets.
+						</small>
 						<blockquote ng-repeat="tweet in story.tweets">
 							<p>
 								<a href="http://twitter.com/{{tweet.from_user}}" target="_blank">
@@ -53,8 +68,11 @@
 								</a>
 							</p>
 							<small>
-								<a href="http://twitter.com/{{tweet.from_user}}" target="_blank">{{tweet.from_user_name}}</a>
+								<a href="http://twitter.com/{{tweet.from_user}}" target="_blank">
+									{{tweet.from_user_name}}
+								</a>
 								via Twitter
+								<i data-time="{{tweet.created_at}}"></i>
 							</small>
 						</blockquote>
 					</div>

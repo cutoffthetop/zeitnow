@@ -5,13 +5,27 @@
 	License: BSD, see LICENSE.md for details.
 """
 
-from wsgiref.handlers import CGIHandler
-from werkzeug.wrappers import Request, Response
-from werkzeug.routing import Map, Rule
 from google.appengine.api.channel import create_channel, send_message
 from google.appengine.api.taskqueue import Task
 from google.appengine.api.urlfetch import fetch
-import json, urllib
+from google.appengine.ext import ndb
+from werkzeug.routing import Map, Rule
+from werkzeug.wrappers import Request, Response
+from wsgiref.handlers import CGIHandler
+import logging, json, urllib
+
+try:
+	from private import ZEIT_API_KEY
+except ImportError:
+	ZEIT_API_KEY = 'no-key-available'
+
+ZEIT_BASE_URL = 'http://api.zeit.de/content'
+TWITTER_BASE_URL = 'http://search.twitter.com/search.json'
+
+
+class Client(ndb.Model):
+	timestamp = ndb.DateTimeProperty(auto_now = True)
+
 
 class Zeitnow(object):
 
@@ -31,46 +45,76 @@ class Zeitnow(object):
 					),
 				Rule(
 					string = '/_ah/channel/connected',
-					endpoint = 'channel_connected',
+					endpoint = 'connect_channel',
+					methods = ['POST']
+					),
+				Rule(
+					string = '/_ah/channel/disconnected',
+					endpoint = 'disconnect_channel',
 					methods = ['POST']
 					)
 				]
 			)
 
-	def fetch_zeit(self, url):
-		from private import ZEIT_API_KEY
+	def fetch_url(self, url, headers = {}, params = {}):
 		resp = fetch(
-			url = url,
-			headers = {'X-Authorization': ZEIT_API_KEY}
+			headers = headers,
+			url = url + '?' + urllib.urlencode(params)
 			)
 		return json.loads(resp.content)
 
-	def fetch_twitter(self, topic):
-		resp = fetch(
-			url = 'http://search.twitter.com/search.json?rpp=3&q=' + topic
+	def fetch_zeit(self, url = ZEIT_BASE_URL):
+		return self.fetch_url(
+			url = url,
+			headers = {'X-Authorization': ZEIT_API_KEY},
+			params = dict(
+				limit = 3
+				)
 			)
-		return json.loads(resp.content)
+
+	def fetch_twitter(self, query):
+		return self.fetch_url(
+			TWITTER_BASE_URL,
+			params = dict(
+				q = query
+				)
+			)['results']
+
+	def broadcast_message(self, message):
+		for client in Client.query().iter():
+			send_message(client.key.id(), message)
 
 	def trigger_update(self, request):
 
-		matches = self.fetch_zeit('http://api.zeit.de/content?limit=3')['matches']
-		result = []
-		for i in range(len(matches)):
-			lead = self.fetch_zeit(matches[i]['uri'])
-			tweets = self.fetch_twitter(urllib.quote(matches[i]['href']))['results']
-			result.append(dict(lead = lead, tweets = tweets))
-		
-		send_message('1234', json.dumps(result))
+		def aggregate(matches):
+			"""
+			for i in range(len(matches)):
+				lead = self.fetch_zeit(matches[i]['uri'])
+				tweets = self.fetch_twitter(matches[i]['href'])
+				yield dict(lead = lead, tweets = tweets)"""
+			for match in matches:
+				lead = self.fetch_zeit(match['uri'])
+				tweets = self.fetch_twitter(match['href'])
+				yield dict(lead = lead, tweets = tweets)
+			
+		matches = self.fetch_zeit()['matches']
+		result = list(aggregate(matches))
+		self.broadcast_message(json.dumps(result))
 
 		return Response(status = 204)
 
-	def channel_connected(self, request):
+	def connect_channel(self, request):
+		Client(id = request.values['from']).put()
+		return Response(status = 204)
+
+	def disconnect_channel(self, request):
+		ndb.Key(Client, request.values['from']).delete()
 		return Response(status = 204)
 
 	def open_channel(self, request):
 
 		client_id = request.values['client_id']
-		token = create_channel(client_id)
+		token = create_channel(client_id, duration_minutes=5)
 
 		Task(url = '/api/update', countdown = 2).add()
 		

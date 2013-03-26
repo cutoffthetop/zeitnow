@@ -5,3 +5,11 @@
 .no-link:hover {
 	text-decoration: none;
 }
+
+.align-middle {
+	vertical-align: middle;
+}
+
+.progress-centered {
+	
+}
