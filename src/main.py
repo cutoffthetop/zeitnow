@@ -114,9 +114,9 @@ class Zeitnow(object):
 	def open_channel(self, request):
 
 		client_id = request.values['client_id']
-		token = create_channel(client_id, duration_minutes=5)
+		token = create_channel(client_id)
 
-		Task(url = '/api/update', countdown = 2).add()
+		Task(url = '/api/update', countdown = 1).add()
 		
 		return Response(json.dumps({'channel': token}))
 

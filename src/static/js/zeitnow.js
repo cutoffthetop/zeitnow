@@ -30,6 +30,7 @@ app.controller('ZeitNowCtrl', function($scope) {
 		$scope.stories = JSON.parse(msg.data);
 		$scope.$apply();
 		$scope.timestampUpdater();
+		$('.bar').hide();
 	};
 
 	$scope.onClose = function(msg) {
@@ -37,17 +38,29 @@ app.controller('ZeitNowCtrl', function($scope) {
 		$scope.openChannel();
 	};
 
-	$scope.timestampUpdater = function(){
+	$scope.timestampUpdater = function() {
 		$('i[data-time]').each(function(){
 			var timestamp = $(this).attr('data-time');
 			var timeago = moment(timestamp).fromNow();
 			$(this).text(timeago);
 		})
-		
+	};
+
+	$scope.progressUpdater = function(times, interval) {
+		var ID = setInterval(function(times) {
+			return function() {
+				if (--times <= 0) {
+					clearInterval(ID);	
+				}
+				$scope.progress = 100-times;
+				$scope.$apply();
+			}
+		}(times), interval);
 	};
 
 	var init = (function() {
 		moment.lang('de');
+		$scope.progressUpdater(100, 30);
 		$scope.openChannel();
 		setInterval($scope.timestampUpdater, 60000);
 	})();

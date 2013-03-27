@@ -18,22 +18,56 @@
 		</head>
 		<body>
 			<div class="container" ng-controller="ZeitNowCtrl">
-				<h1>
-					Zeit Now
-					<a href="#myModal" data-toggle="modal">
-						<i class="icon-info-sign align-middle"></i>
-					</a>
-				</h1>
-				<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-						<h3 id="myModalLabel">About Zeit Now</h3>
-					</div>
-					<div class="modal-body">
-						<p>One fine body…</p>
+
+				<div class="row">
+					<h1 class="span4">
+						Zeit Now
+					</h1>
+					<ul class="nav nav-pills nav-middle hidden-desktop">
+						<li><a href="#about" role="button" data-toggle="modal">
+								<i class="icon-info-sign"></i> About
+							</a>
+						</li>
+						<li><a href="mailto:zeitnow@apigems.com">
+								<i class="icon-envelope"></i> Feedback
+							</a>
+						</li>
+						<li><a href="http://github.com/cutoffthetop/zeitnow">
+								<i class="icon-align-left"></i> Github
+							</a>
+						</li>
+					</ul>
+					<ul class="unstyled pull-right hidden-tablet hidden-phone">
+						<li><a href="#about" role="button" data-toggle="modal">
+								<i class="tooltips icon-info-sign" title="About Zeit Now" data-toggle="modal tooltip" data-placement="bottom"></i>
+							</a>
+						</li>
+						<li><a href="mailto:zeitnow@apigems.com" class="tooltips" title="Feedback geben" data-toggle="tooltip" data-placement="bottom">
+								<i class="icon-envelope"></i>
+							</a>
+						</li>
+						<li><a href="http://github.com/cutoffthetop/zeitnow" class="tooltips" title="Auf Github ansehen" data-toggle="tooltip" data-placement="bottom">
+								<i class="icon-align-left"></i>
+							</a>
+						</li>
+					</ul>
+					<script type="text/javascript">
+						$('.tooltips').tooltip();
+					</script>
+					<div id="about" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+							<h3 id="myModalLabel">Über Zeit Now</h3>
+						</div>
+						<div class="modal-body">
+							<p>Verfolge Nachrichten und ihre Resonanz in der Twitter Community in Echtzeit. Neue Artikel von ZEIT ONLINE und passende Tweets werden automatisch angezeigt ohne, dass du etwas tun musst.<br/>Zeit Now ist ein privates, nicht-kommerzielles Projekt von <a href="http://twitter.com/cutoffthetop">cutoffthetop</a> und kein offizielles Angebot der ZEIT ONLINE GmbH.</p>
+						</div>
 					</div>
 				</div>
-				<hr ng-show="stories"/>
+				<div class="progress">
+					<div class="bar" style="width:{{progress}}%;"></div>
+				</div>
+				<hr/>
 				<div class="row">
 					<div ng-repeat="story in stories" class="span4">
 						<small class="label label-info">
