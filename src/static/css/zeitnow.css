@@ -2,6 +2,14 @@ h1, ul {
 	margin-bottom: 0;
 }
 
+h2 {
+	word-wrap: break-word;
+}
+
+.lead {
+	margin-bottom: 10px;
+}
+
 .no-link {
 	color: #333333;
 }
@@ -13,6 +21,10 @@ h1, ul {
 .nav-middle {
 	margin: 0px;
 	padding-top: 1em;
+}
+
+.align-middle {
+	vertical-align: middle;
 }
 
 .progress {

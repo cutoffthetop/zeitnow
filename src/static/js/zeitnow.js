@@ -30,7 +30,7 @@ app.controller('ZeitNowCtrl', function($scope) {
 		$scope.stories = JSON.parse(msg.data);
 		$scope.$apply();
 		$scope.timestampUpdater();
-		$('.bar').hide();
+		$('.progress').hide();
 	};
 
 	$scope.onClose = function(msg) {

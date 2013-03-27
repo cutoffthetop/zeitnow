@@ -20,10 +20,12 @@
 			<div class="container" ng-controller="ZeitNowCtrl">
 
 				<div class="row">
-					<h1 class="span4">
+					<h1 class="span4 hidden-phone">
 						Zeit Now
 					</h1>
 					<ul class="nav nav-pills nav-middle hidden-desktop">
+						<li class="active"><a href="#" class="hidden-tablet">
+							<i class="icon-home"></i> Zeit Now
 						<li><a href="#about" role="button" data-toggle="modal">
 								<i class="icon-info-sign"></i> About
 							</a>
@@ -80,22 +82,22 @@
 							<a href="{{story.lead.href}}" class="no-link" target="_blank" alt="Den ganze Artikel lesen.">
 								{{story.lead.teaser_text}}
 							</a>
-							<small ng-repeat="creator in story.lead.creators">
-								– {{creator.name}}
-							</small>
 						</p>
-					</div>
-				</div>
-				<hr ng-show="stories"/>
-				<div class="row">
-					<div ng-repeat="story in stories" class="span4">
+						<small class="muted">
+								–
+								<span ng-repeat="creator in story.lead.creators">
+									{{creator.name}}
+								</span>
+								<i data-time="{{story.lead.release_date}}"></i>
+						</small>
+						<hr/>
 						<small class="muted" ng-hide="story.tweets">
 							Noch keine Tweets.
 						</small>
 						<blockquote ng-repeat="tweet in story.tweets">
 							<p>
 								<a href="http://twitter.com/{{tweet.from_user}}" target="_blank">
-									<img src="{{tweet.profile_image_url}}" class="pull-right img-circle" alt="tweet.from_user_name"/>
+									<img ng-src="{{tweet.profile_image_url}}" class="pull-right img-circle" alt="tweet.from_user_name"/>
 								</a>
 								<a href="http://twitter.com/{{tweet.from_user}}/status/{{tweet.id_str}}" class="no-link" target="_blank">
 									{{tweet.text}}
